@@ -1,5 +1,5 @@
-# Usa a imagem oficial do Node.js
-FROM node:20-alpine
+# Usa a imagem oficial do Node.js (Debian slim para mais compatibilidade)
+FROM node:20-slim
 
 # Define o diretório de trabalho dentro do container
 WORKDIR /app
@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5420
 
 # Comando para iniciar a aplicação
-CMD ["npm", "run", "dev"]
+CMD ["node", "./src/server.js"]
