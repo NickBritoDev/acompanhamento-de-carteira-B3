@@ -1,0 +1,10 @@
+{
+  "name": "carteira-acoes",
+  "version": "1.0.0",
+  "main": "monitor.js",
+  "type": "module",
+  "dependencies": {
+    "cli-table3": "^0.6.3",
+    "yahoo-finance2": "^2.12.0"
+  }
+}
