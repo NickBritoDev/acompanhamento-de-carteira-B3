@@ -1,16 +1,17 @@
-import yahooFinance from "yahoo-finance2";
+import yahooFinance from 'yahoo-finance2'
+import { DadosAtivo } from '@/types/carteira'
 
-export async function obterDadosAtivo(simbolo) {
+export async function obterDadosAtivo(simbolo: string): Promise<DadosAtivo> {
   try {
-    const quote = await yahooFinance.quote(simbolo);
+    const quote = await yahooFinance.quote(simbolo)
 
-    let fundamentals = null;
+    let fundamentals = null
     try {
       fundamentals = await yahooFinance.quoteSummary(simbolo, {
-        modules: ["defaultKeyStatistics", "summaryDetail", "financialData"],
-      });
+        modules: ['defaultKeyStatistics', 'summaryDetail', 'financialData'],
+      })
     } catch {
-      console.warn(`⚠️  Dados fundamentais não disponíveis para ${simbolo}`);
+      console.warn(`⚠️  Dados fundamentais não disponíveis para ${simbolo}`)
     }
 
     return {
@@ -18,25 +19,25 @@ export async function obterDadosAtivo(simbolo) {
       pvp:
         fundamentals?.defaultKeyStatistics?.priceToBook ||
         fundamentals?.summaryDetail?.priceToBook ||
-        "N/A",
+        'N/A',
       roe:
         fundamentals?.financialData?.returnOnEquity ||
         fundamentals?.financialData?.returnOnEquityRatio ||
-        "N/A",
+        'N/A',
       dy:
         fundamentals?.summaryDetail?.dividendYield ||
         fundamentals?.summaryDetail?.trailingAnnualDividendYield ||
-        "N/A",
+        'N/A',
       variacao: quote.regularMarketChangePercent || 0,
-    };
+    }
   } catch (error) {
-    console.error(`❌ Erro ao buscar dados para ${simbolo}:`, error.message);
+    console.error(`❌ Erro ao buscar dados para ${simbolo}:`, (error as Error).message)
     return {
       preco: 0,
-      pvp: "N/A",
-      roe: "N/A",
-      dy: "N/A",
+      pvp: 'N/A',
+      roe: 'N/A',
+      dy: 'N/A',
       variacao: 0,
-    };
+    }
   }
 }
