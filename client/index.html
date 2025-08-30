@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteira de Investimentos</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/script.js" defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <h1><i class="fas fa-chart-line"></i> Carteira de Investimentos</h1>
+                <button class="refresh-btn" onclick="atualizarDados()">
+                    <i class="fas fa-sync-alt"></i> Atualizar
+                </button>
+            </div>
+            <div class="distribution-bar">
+                <div class="dist-acoes"></div>
+                <div class="dist-fiis"></div>
+            </div>
+            <div class="distribution-labels">
+                <span><i class="fas fa-chart-bar"></i> Ações <span id="percAcoesLabel">38%</span></span>
+                <span><i class="fas fa-building"></i> FIIs <span id="percFiisLabel">62%</span></span>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Carregando dados da carteira...</p>
+        </div>
+
+        <div class="summary" id="summary" style="display: none;">
+            <div class="summary-card">
+                <div class="icon icon-wallet"><i class="fas fa-wallet"></i></div>
+                <h3>Valor Total</h3>
+                <div class="value" id="valorTotal">R$ 0,00</div>
+            </div>
+            <div class="summary-card">
+                <div class="icon icon-target"><i class="fas fa-bullseye"></i></div>
+                <h3>Necessário Investir</h3>
+                <div class="value" id="necessarioInvestir">R$ 0,00</div>
+            </div>
+            <div class="summary-card">
+                <div class="icon icon-invest"><i class="fas fa-coins"></i></div>
+                <h3>Custo Total Meta</h3>
+                <div class="value" id="custoTotalMeta">R$ 0,00</div>
+            </div>
+            <div class="summary-card">
+                <div class="icon icon-stocks"><i class="fas fa-chart-bar"></i></div>
+                <h3>Valor em Ações</h3>
+                <div class="value" id="valorAcoes">R$ 0,00</div>
+            </div>
+            <div class="summary-card">
+                <div class="icon icon-fiis"><i class="fas fa-building"></i></div>
+                <h3>Valor em FIIs</h3>
+                <div class="value" id="valorFiis">R$ 0,00</div>
+            </div>
+            <div class="summary-card">
+                <div class="icon icon-assets"><i class="fas fa-layer-group"></i></div>
+                <h3>Total de Ativos</h3>
+                <div class="value" id="totalAtivos">0</div>
+            </div>
+        </div>
+
+        <div class="filters" id="filters" style="display: none;">
+            <div class="filter-group">
+                <label><i class="fas fa-filter"></i> Tipo:</label>
+                <select id="tipoFilter">
+                    <option value="">Todos</option>
+                    <option value="Ação">Ações</option>
+                    <option value="FII">FIIs</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-sort"></i> Ordenar por:</label>
+                <select id="ordenarFilter">
+                    <option value="nome">Nome</option>
+                    <option value="valorAtual">Valor Atual</option>
+                    <option value="variacao">Variação</option>
+                    <option value="dy">Dividend Yield</option>
+                    <option value="qtdComprar">Qtd. Comprar</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-percentage"></i> Variação:</label>
+                <select id="variacaoFilter">
+                    <option value="">Todas</option>
+                    <option value="positiva">Positivas</option>
+                    <option value="negativa">Negativas</option>
+                    <option value="neutra">Neutras</option>
+                </select>
+            </div>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar ativo...">
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="carteiraTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-chart-line"></i> Ativo</th>
+                        <th><i class="fas fa-tag"></i> Tipo</th>
+                        <th><i class="fas fa-dollar-sign"></i> Preço</th>
+                        <th><i class="fas fa-boxes"></i> Qtd Atual</th>
+                        <th><i class="fas fa-wallet"></i> Valor Atual</th>
+                        <th><i class="fas fa-bullseye"></i> Qtd Meta</th>
+                        <th><i class="fas fa-shopping-cart"></i> Qtd Comprar</th>
+                        <th><i class="fas fa-calculator"></i> Custo Total</th>
+                        <th><i class="fas fa-percentage"></i> Variação</th>
+                        <th><i class="fas fa-chart-pie"></i> P/VP</th>
+                        <th><i class="fas fa-trending-up"></i> ROE</th>
+                        <th><i class="fas fa-coins"></i> DY</th>
+                    </tr>
+                </thead>
+                <tbody id="carteiraBody">
+                </tbody>
+            </table>
+
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h3>Nenhum ativo encontrado</h3>
+                <p>Ajuste os filtros para ver mais resultados</p>
+            </div>
+        </div>
+
+        <div class="footer" id="footer" style="display: none;">
+            <div class="footer-info">
+                <i class="fas fa-clock"></i>
+                <span>Última atualização: <span id="ultimaAtualizacao"></span></span>
+            </div>
+            <div class="footer-info">
+                <i class="fas fa-database"></i>
+                <span id="totalRegistros">0 ativos</span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
