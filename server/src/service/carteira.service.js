@@ -1,7 +1,6 @@
 import yahooFinance from 'yahoo-finance2'
-import { DadosAtivo } from '@/types/carteira'
 
-export async function obterDadosAtivo(simbolo: string): Promise<DadosAtivo> {
+export async function obterDadosAtivo(simbolo) {
   try {
     const quote = await yahooFinance.quote(simbolo)
 
@@ -31,7 +30,7 @@ export async function obterDadosAtivo(simbolo: string): Promise<DadosAtivo> {
       variacao: quote.regularMarketChangePercent || 0,
     }
   } catch (error) {
-    console.error(`❌ Erro ao buscar dados para ${simbolo}:`, (error as Error).message)
+    console.error(`❌ Erro ao buscar dados para ${simbolo}:`, (error).message)
     return {
       preco: 0,
       pvp: 'N/A',
