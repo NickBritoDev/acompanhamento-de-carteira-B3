@@ -3,13 +3,9 @@
   "version": "1.0.0",
   "main": "app.js",
   "type": "module",
-  "exports": {
-    "./utils/carteira.json": {
-      "import": "./server/src/utils/carteira.json"
-    }
-  },
   "scripts": {
-    "dev": "node ./server/src/server.js"
+    "dev": "node ./server/src/server.js",
+    "resume": "node ./microservico/index.js"
   },
   "dependencies": {
     "cli-table3": "^0.6.3",
