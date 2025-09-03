@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { dataAtual } from "../helpers/data-atual.js";
 import { html } from "../html/html.js";
+import "dotenv/config";
 
 export async function enviarEmail(dados) {
     const indexHtml = await html(dados)
@@ -17,7 +18,7 @@ export async function enviarEmail(dados) {
   try {
     const info = await transporter.sendMail({
       from: '"Financial Times - Relatórios" <sendnotificationtc@gmail.com>',
-      to: "nicolasbcruz@gmail.com",
+      to: process.env.EMAIL_USER,
       subject: `📊 Financial Times - Relatório de Investimentos • ${dataAtual}`,
       html: indexHtml,
     });
