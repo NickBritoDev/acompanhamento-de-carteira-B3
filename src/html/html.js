@@ -1,3 +1,4 @@
+import { marked } from "marked";
 import { chamarGemini } from "../functions/gemini.js";
 import { dataAtual } from "../helpers/data-atual.js";
 import { promptGemini } from "../utils/prompt.js";
@@ -10,14 +11,9 @@ export async function html(dados) {
     const cardsMetricas = await cardsMetricasHtml(dados);
     const resumoDetalhado = await resumoDetalhadoHtml(dados);
     const prompt = await promptGemini(dados);
-    const analise = await chamarGemini(prompt);
 
-    const analiseFormatada = analise
-        .replace(/\*\*(.*?)\*\*/g, '<h3 style="margin:25px 0 15px 0; color:#2c3e50; font-size:20px; font-weight:600; border-bottom:2px solid #3498db; padding-bottom:8px; display:flex; align-items:center;"><span style="background:#3498db; color:#fff; border-radius:6px; padding:6px 12px; margin-right:12px; font-size:14px;">📈</span>$1</h3>')
-        .replace(/\n\* /g, '<li style="margin:8px 0; line-height:1.6; color:#2c3e50;">')
-        .replace(/\n/g, '<br>')
-        .replace(/<li>(.*?)<br>/g, '<li>$1</li>')
-        .replace(/(<li>.*<\/li>)/gs, '<ul style="margin:15px 0; padding-left:20px;">$1</ul>');
+    const analiseMarkdown = await chamarGemini(prompt);
+    const analise = marked(analiseMarkdown); // converte para HTML
 
     const html = `
         <!DOCTYPE html>
@@ -25,55 +21,89 @@ export async function html(dados) {
         <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Relatório de Investimentos</title>
+        <title>The Financial Herald - Relatório de Investimentos</title>
+        <!--[if mso]>
+        <style type="text/css">
+        table { border-collapse: collapse; }
+        </style>
+        <![endif]-->
         </head>
-        <body style="margin:0; padding:0; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f8f9fa;">
-        <div style="max-width:1000px; margin:0 auto; background:#fff;">
+        <body style="margin:0; padding:0; background-color:#f4f1e8; font-family:Georgia, 'Times New Roman', serif;">
 
-        <!-- Cabeçalho estilo jornal premium -->
-        <header style="background:linear-gradient(135deg, #1a252f 0%, #2c3e50 100%); color:#fff; text-align:center; padding:30px 20px; position:relative;">
-        <div style="border-bottom:3px solid #f39c12; padding-bottom:20px; margin-bottom:20px;">
-        <h1 style="margin:0; font-size:36px; font-weight:700; letter-spacing:-1px; text-shadow:2px 2px 4px rgba(0,0,0,0.3);">
-        💰 FINANCIAL TIMES
+        <!-- Container principal para email -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f1e8;">
+        <tr>
+        <td align="center" style="padding:20px 10px;">
+
+        <!-- Container do jornal -->
+        <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color:#fefcf7; border:3px solid #8b7355; box-shadow:0 0 20px rgba(0,0,0,0.1);">
+
+        <!-- Cabeçalho do jornal vintage -->
+        <tr>
+        <td style="background-color:#2c2c2c; background-image:linear-gradient(180deg, #1a1a1a 0%, #2c2c2c 100%); color:#f4f1e8; text-align:center; padding:30px 20px; border-bottom:4px double #d4af37; position:relative;">
+        <div style="font-size:11px; text-align:right; opacity:0.7; margin-bottom:10px;">Vol. ${new Date().getFullYear()} • Nº ${new Date().getDate()}${new Date().getMonth() + 1}</div>
+        <h1 style="margin:0; font-size:42px; font-weight:bold; letter-spacing:2px; text-shadow:2px 2px 4px rgba(0,0,0,0.3); font-family:Georgia, 'Times New Roman', serif;">
+        THE FINANCIAL HERALD
         </h1>
-        <div style="font-size:14px; font-weight:300; margin-top:8px; opacity:0.9; text-transform:uppercase; letter-spacing:2px;">
+        <div style="font-size:13px; margin:8px 0; text-transform:uppercase; letter-spacing:2px; opacity:0.9;">
         Relatório Personalizado de Investimentos
         </div>
-        </div>
-        <div style="font-size:16px; font-weight:500;">
+        <div style="height:2px; background-color:#d4af37; margin:15px auto; width:200px;"></div>
+        <div style="font-size:16px; font-weight:bold; color:#d4af37;">
         📅 Edição de ${dataAtual}
         </div>
-        <div style="position:absolute; top:15px; right:20px; font-size:12px; opacity:0.7;">
-        Vol. ${new Date().getFullYear()} • Nº ${new Date().getDate()}${new Date().getMonth() + 1}
-        </div>
-        </header>
+        </td>
+        </tr>
 
-        <!-- Conteúdo principal -->
-        <main style="padding:0 20px;">
+        <!-- Linha decorativa -->
+        <tr>
+        <td style="background-color:#fefcf7; height:10px; background-image:repeating-linear-gradient(90deg, #d4af37 0px, #d4af37 2px, transparent 2px, transparent 8px);"></td>
+        </tr>
 
-        <!-- Cards de métricas -->
+        <!-- Cards de métricas (seu componente existente) -->
+        <tr>
+        <td style="padding:20px;">
+        <div style="background-color:#fff; border:2px solid #8b7355; padding:15px; margin:10px 0;">
         ${cardsMetricas}
+        </div>
+        </td>
+        </tr>
 
-        <!-- Linha editorial -->
-        <div style="text-align:center; margin:30px 0; padding:20px; background:linear-gradient(135deg, #667eea22 0%, #764ba222 100%); border-radius:8px; border:1px solid #e9ecef;">
-        <h2 style="margin:0 0 10px 0; color:#2c3e50; font-size:22px; font-weight:600;">
-        📈 Posições em Carteira
+        <!-- Manchete principal -->
+        <tr>
+        <td style="text-align:center; padding:25px 20px; background-color:#f9f9f9; border-top:2px solid #8b7355; border-bottom:2px solid #8b7355;">
+        <h2 style="margin:0 0 8px 0; font-size:24px; font-weight:bold; color:#2c2c2c; text-transform:uppercase; letter-spacing:1px; font-family:Georgia, serif;">
+        📈 POSIÇÕES EM CARTEIRA
         </h2>
-        <p style="margin:0; color:#7f8c8d; font-size:14px; font-style:italic;">
+        <p style="margin:0; color:#666; font-size:13px; font-style:italic;">
         Análise detalhada dos seus investimentos • Atualizado em tempo real
         </p>
-        </div>
+        </td>
+        </tr>
 
-        <!-- Tabela principal -->
+        <!-- Tabela principal (seu componente existente) -->
+        <tr>
+        <td style="padding:20px;">
+        <div style="background-color:#fff; border:2px solid #8b7355;">
         ${tabelaCarteira}
+        </div>
+        </td>
+        </tr>
 
-        <!-- Resumo detalhado -->
+        <!-- Resumo detalhado (seu componente existente) -->
+        <tr>
+        <td style="padding:20px;">
+        <div style="background-color:#fff; border:2px solid #8b7355; padding:15px;">
         ${resumoDetalhado}
+        </div>
+        </td>
+        </tr>
 
         <!-- Gráfico de distribuição -->
-        <div style="margin:30px 0; text-align:center; background:#fff; border:1px solid #e9ecef; border-radius:8px; padding:25px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <h3 style="margin:0 0 20px 0; color:#2c3e50; font-size:20px; font-weight:600;">
-        🎯 Distribuição de Ativos
+        <tr>
+        <td style="text-align:center; padding:30px 20px; background-color:#fff; border:2px solid #8b7355; margin:20px;">
+        <h3 style="margin:0 0 20px 0; font-size:20px; font-weight:bold; color:#2c2c2c; font-family:Georgia, serif;">
+        🎯 DISTRIBUIÇÃO DE ATIVOS
         </h3>
         <img src="https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify({
         type: "doughnut",
@@ -81,7 +111,7 @@ export async function html(dados) {
             labels: [`Ações (${dados.resumo.percAcoes}%)`, `FIIs (${dados.resumo.percFiis}%)`],
             datasets: [{
                 data: [dados.resumo.percAcoes, dados.resumo.percFiis],
-                backgroundColor: ["#3498db", "#e74c3c"],
+                backgroundColor: ["#8b7355", "#d4af37"],
                 borderWidth: 3,
                 borderColor: "#fff"
             }]
@@ -94,7 +124,7 @@ export async function html(dados) {
                     labels: {
                         font: { size: 14, weight: "600" },
                         padding: 20,
-                        color: "#2c3e50"
+                        color: "#2c2c2c"
                     }
                 }
             },
@@ -104,44 +134,52 @@ export async function html(dados) {
                 }
             }
         }
-    }))}" alt="Distribuição dos Ativos" style="max-width:350px; width:100%; border-radius:8px;" />
-        </div>
+    }))}" alt="Distribuição dos Ativos" width="300" style="max-width:100%; border-radius:8px;" />
+        </td>
+        </tr>
 
-        <!-- Análise da IA estilo editorial -->
-        <article style="margin:30px 0; background:#fff; border:1px solid #e9ecef; border-radius:8px; overflow:hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <header style="background:linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color:#fff; padding:20px;">
-        <h2 style="margin:0; font-size:24px; font-weight:600; display:flex; align-items:center;">
-        <span style="margin-right:12px;">🤖</span>
-        Análise Especializada
+        <!-- Editorial / Análise da IA -->
+        <tr>
+        <td style="background-color:#8b7355; color:#fff; padding:20px; text-align:center;">
+        <h2 style="margin:0; font-size:22px; font-weight:bold; font-family:Georgia, serif;">
+        🤖 ANÁLISE ESPECIALIZADA
         </h2>
-        <p style="margin:8px 0 0 0; opacity:0.9; font-size:14px;">
+        <p style="margin:8px 0 0 0; opacity:0.9; font-size:13px;">
         Por nossa Inteligência Artificial Financeira
         </p>
-        </header>
-        <div style="padding:25px; font-size:15px; line-height:1.7; color:#2c3e50;">
-        ${analiseFormatada}
-        </div>
-        </article>
-
-        </main>
+        </td>
+        </tr>
+        <tr>
+        <td style="padding:25px; background-color:#fff; font-size:14px; line-height:1.6; color:#2c2c2c; border-left:4px solid #d4af37;">
+        ${analise}
+        </td>
+        </tr>
 
         <!-- Rodapé -->
-        <footer style="background:#2c3e50; color:#bdc3c7; padding:25px 20px; text-align:center; border-top:4px solid #f39c12;">
-        <div style="font-size:14px; margin-bottom:10px;">
-        <strong>Financial Times</strong> • Relatório Personalizado de Investimentos
+        <tr>
+        <td style="background-color:#2c2c2c; color:#bdc3c7; padding:25px 20px; text-align:center; border-top:4px double #d4af37;">
+        <div style="font-size:14px; margin-bottom:8px; font-weight:bold;">
+        THE FINANCIAL HERALD
         </div>
-        <div style="font-size:12px; opacity:0.8;">
+        <div style="font-size:11px; opacity:0.8; line-height:1.4;">
+        Relatório Personalizado de Investimentos<br>
         Relatório gerado automaticamente • ${dados.resumo.ultimaAtualizacao}
         </div>
-        <div style="font-size:11px; margin-top:15px; opacity:0.6; border-top:1px solid #34495e; padding-top:15px;">
-        Este relatório é fornecido apenas para fins informativos. Não constitui aconselhamento de investimento.
+        <div style="font-size:10px; margin-top:15px; opacity:0.6; border-top:1px solid #34495e; padding-top:15px; line-height:1.3;">
+        Este relatório é fornecido apenas para fins informativos.<br>
+        Não constitui aconselhamento de investimento.
         </div>
-        </footer>
+        </td>
+        </tr>
 
-        </div>
+        </table>
+        </td>
+        </tr>
+        </table>
+
         </body>
         </html>
-        `;
+    `;
 
     return html;
 }
